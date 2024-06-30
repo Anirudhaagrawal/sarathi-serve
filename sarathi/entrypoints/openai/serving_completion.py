@@ -104,13 +104,15 @@ class OpenAIServingCompletion(OpenAIServing):
         result_generator: AsyncIterator[Tuple[
             int, RequestOutput]] = merge_async_iterators(*generators)
 
+
         # Similar to the OpenAI API, when n != best_of, we do not stream the
         # results. In addition, we do not stream the results when use
         # beam search.
         stream = request.stream
 
+
         # Streaming response
-        if stream:
+        if request.stream:
             return self.completion_stream_generator(request,
                                                     raw_request,
                                                     result_generator,
