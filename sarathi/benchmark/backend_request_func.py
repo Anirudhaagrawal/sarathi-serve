@@ -234,7 +234,6 @@ async def async_request_openai_completions(
             "model": request_func_input.model,
             "prompt": request_func_input.prompt,
             "temperature": 0.0,
-            "best_of": request_func_input.best_of,
             "max_tokens": request_func_input.output_len,
             "stream": True,
         }
@@ -242,6 +241,7 @@ async def async_request_openai_completions(
             "Authorization": f"Bearer {os.environ.get('OPENAI_API_KEY')}"
         }
 
+        
         output = RequestFuncOutput()
         output.prompt_len = request_func_input.prompt_len
 
