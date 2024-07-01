@@ -1,3 +1,7 @@
-python -m sarathi.entrypoints.openai.api_server --model_config_model yahma/llama-7b-hf --parallel_config_tensor_parallel_size 1 --parallel_config_pipeline_parallel_size 2 --log_level debug --host 127.0.0.1 --api_key ""
+nsys profile --duration 120 -y 40 --cuda-graph-trace=node  --kill sigkill --cuda-memory-usage=true -o sarathi_new_profile  --trace=nvtx,cuda,osrt  python -m sarathi.entrypoints.openai.api_server --model_config_model yahma/llama-7b-hf --parallel_config_tensor_parallel_size 1 --parallel_config_pipeline_parallel_size 2 --log_level debug --host 127.0.0.1 --api_key ""
 
 python sarathi/benchmark/benchmark_serving.py --backend vllm --model yahma/llama-7b-hf --dataset-name sharegpt --dataset-path /workspace/sarathi-serve/ShareGPT_V3_unfiltered_cleaned_split.json --num-prompts 1000 
+
+nsys profile --duration 350  --cuda-graph-trace=node --cuda-memory-usage=true -o vllm_profile  --trace=nvtx,cuda,osrt python -m vllm.entrypoints.openai.api_server --model yahma/llama-7b-hf --swap-space 16 --disable-log-requests --use-v2-block-manager --tensor-parallel-size 1 --pipeline-parallel-size 2 --enforce-eager --distributed-executor-backend ray
+
+python vllm/benchmarks/benchmark_serving.py --backend  vllm --model yahma/llama-7b-hf --dataset-name sharegpt --dataset-path /workspace/sarathi-serve/ShareGPT_V3_unfiltered_cleaned_split.json --num-prompts 1000 
